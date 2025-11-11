@@ -1,7 +1,14 @@
+//Start:27/10/2025
+//End: /11/2025
+
+using ChatApplication.API;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configure custom services
+builder.Services.ConfigureServices(builder.Configuration);
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
