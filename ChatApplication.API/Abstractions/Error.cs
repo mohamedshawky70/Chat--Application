@@ -1,9 +1,9 @@
 ﻿namespace ChatApplication.API.Abstractions;
 
 //Automatically generates constructor, properties, ToString(), Equals(), and GetHashCode().
-public record Error(string Code, string Description)
+public record Error(string Code, string Description,int? StatusCode)
 {
-	public static readonly Error None = new Error(string.Empty, string.Empty);
+	public static readonly Error None = new Error(string.Empty, string.Empty,null);
 }
 
 //The same above record can be written as class as below

@@ -9,7 +9,7 @@ public class User: IdentityUser
         public bool IsOnline { get; set; }
         public string? ConnectionId { get; set; }
         public string? Avatar { get; set; }
-        
+    	public List<RefreshToken> RefreshTokens { get; set; } = [];
         //public ICollection<Message> SentMessages { get; set; } = new List<Message>();
         //public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
         //public ICollection<ChatRoomUser> ChatRoomUsers { get; set; } = new List<ChatRoomUser>();
