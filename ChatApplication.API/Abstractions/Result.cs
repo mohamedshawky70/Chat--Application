@@ -18,7 +18,7 @@ public class Result
 		Error = error;
 	}
 	
-	public Result Success()
+	public static Result Success()
 	{
 		return new Result(true, Error.None);
 	}
@@ -28,8 +28,8 @@ public class Result
 		return new Result(false, error);
 	}
 
-	// Tow methods for generic Result<TValue> to reutrn success with value
-	public Result<TValue> Success<TValue>(TValue value)
+	// Two methods for generic Result<TValue> to reutrn success with value
+	public static Result<TValue> Success<TValue>(TValue value)
 	{
 		return new Result<TValue>(value,true, Error.None);
 	}
