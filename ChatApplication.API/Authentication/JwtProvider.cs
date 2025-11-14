@@ -25,8 +25,8 @@ public class JwtProvider : IJwtProvider
 		{
 			new Claim(JwtRegisteredClaimNames.Sub, user.Id),
 			new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-			new Claim(JwtRegisteredClaimNames.GivenName, user.UserName!),
-			new Claim(JwtRegisteredClaimNames.FamilyName,user.UserName!),
+			new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName!),
+			new Claim(JwtRegisteredClaimNames.FamilyName,user.LastName!),
 			new Claim(nameof(roles),JsonSerializer.Serialize(roles),JsonClaimValueTypes.JsonArray),
 			new Claim(JwtRegisteredClaimNames.Jti, Guid.CreateVersion7().ToString()),
 		};

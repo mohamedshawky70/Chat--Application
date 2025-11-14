@@ -54,7 +54,7 @@ public class AuthService : IAuthService
 			});
 			await _userManager.UpdateAsync(user);
 
-			var response=new AuthResponse(user.Id, user.Email, user.UserName!, taken, expiresIn, refreshToken, refreshTokenExpiration);
+			var response=new AuthResponse(user.Id, user.Email, user.FirstName, user.LastName, taken, expiresIn, refreshToken, refreshTokenExpiration);
 
 			return Result.Success(response);
 		}
@@ -104,7 +104,7 @@ public class AuthService : IAuthService
 		});
 		await _userManager.UpdateAsync(user);
 
-		var response=new AuthResponse(user.Id, user.Email, user.UserName!, newToken, expiresIn, newRefreshToken, refreshTokenExpiration);
+		var response=new AuthResponse(user.Id, user.Email, user.FirstName, user.LastName, newToken, expiresIn, newRefreshToken, refreshTokenExpiration);
 		return Result.Success(response);
 
 	}
@@ -136,7 +136,9 @@ public class AuthService : IAuthService
 		var user = new User()
 		{
 			Email = request.Email,
-			UserName = request.UserName,
+			UserName = request.Email,
+			FirstName = request.FirstName,
+			LastName = request.LastName
 		};
 		var result = await _userManager.CreateAsync(user, request.Password);
 		if (result.Succeeded)
@@ -238,7 +240,7 @@ public class AuthService : IAuthService
 		var body = streamReader.ReadToEnd();//إقراها للاخر
 		streamReader.Close();
 		body = body
-			.Replace("[name]", $"{user.UserName}")
+			.Replace("[name]", $"{user.FirstName} {user.LastName}")
 			.Replace("[action_url]", $"{origin}/auth/emailConfirmation?userId={user.Id}&code={code}");//الفرونت هيعرفني شكل اليو ار ال ده مثال مش اكتر
 
 		BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "✅Confirm your email", body));
