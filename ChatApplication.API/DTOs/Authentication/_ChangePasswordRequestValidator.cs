@@ -2,9 +2,9 @@
 
 namespace ChatApplication.API.DTOs.Authentication;
 
-public class _ChangePasswordRequestValidation : AbstractValidator<_ChangePasswordRequest>
+public class _ChangePasswordRequestValidator : AbstractValidator<_ChangePasswordRequest>
 {
-	public _ChangePasswordRequestValidation()
+	public _ChangePasswordRequestValidator()
 	{
 		RuleFor(x => x.CurrentPassword).NotEmpty();
 

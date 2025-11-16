@@ -1,11 +1,12 @@
 ﻿using ChatApplication.API.Authentication;
 using ChatApplication.API.Data;
+using ChatApplication.API.Services.AccountService;
 using ChatApplication.API.Services.EmailService;
+using ChatApplication.API.Services.FileService;
 using ChatApplication.API.Settings;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
@@ -67,16 +68,18 @@ public static class DependencyInjection
 		services.AddScoped<IEmailSender, EmailService>();
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IJwtProvider, JwtProvider>();
+		services.AddScoped<IFileService, FileService>();
+		services.AddScoped<IAccountService, AccountService>();
 
 		//Add Fluent Validation
 		services.AddFluentValidationAutoValidation()
 			.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 		//Add Hangfire
-	    services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
+		services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 		services.AddHangfireServer();
 
-		
+
 
 		return services;
 

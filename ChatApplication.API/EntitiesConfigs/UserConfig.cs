@@ -11,5 +11,11 @@ public class UserConfig : IEntityTypeConfiguration<User>
 
 		builder.Property(u => u.ConnectionId)
 			.HasMaxLength(200);
+
+		builder.Property(u => u.FirstName)
+			.HasMaxLength(100);
+
+		builder.Property(u => u.LastName)
+			.HasMaxLength(200);
 	}
 }

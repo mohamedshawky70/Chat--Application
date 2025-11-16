@@ -6,14 +6,10 @@ namespace ChatApplication.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
-	private readonly IAuthService _authService;
+	private readonly IAuthService _authService=authService;
 
-	public AuthController(IAuthService authService)
-	{
-		_authService = authService;
-	}
 
 	[HttpPost("")]
 	public async Task<IActionResult> Login([FromBody] _LoginRequest request, CancellationToken cancellationToken)

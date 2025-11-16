@@ -2,4 +2,13 @@
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Identity.UI.Services;
 global using FluentValidation;
+global using ChatApplication.API.Abstractions;
+global using ChatApplication.API.Errors;
+global using ChatApplication.API.FileSetting;
+global using ChatApplication.API.Data;
+global using Microsoft.AspNetCore.Authorization;
+
+
+
+
 

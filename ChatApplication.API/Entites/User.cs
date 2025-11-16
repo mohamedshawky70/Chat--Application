@@ -6,7 +6,6 @@ public class User: IdentityUser
 {
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
-	public string PhonNumber { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsOnline { get; set; }
     public string? ConnectionId { get; set; }
