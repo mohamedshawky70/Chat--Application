@@ -1,4 +1,6 @@
-﻿namespace ChatApplication.API.DTOs.File;
+﻿using ChatApplication.API.Settings;
+
+namespace ChatApplication.API.DTOs.File;
 
 public class UploadProfileAvatarRequestValidator : AbstractValidator<UploadProfileAvatarRequest>
 {
