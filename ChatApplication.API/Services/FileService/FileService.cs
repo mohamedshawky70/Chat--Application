@@ -17,9 +17,9 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 		string RootPath = _webHostEnvironment.WebRootPath; //...wwwroot
 		var ImageName = $"{Guid.NewGuid()}{Extension}";  //[random name] /3456sd23rf.png(generate GUID To be uninq in db) 
 		string ImgPath = Path.Combine($"{RootPath}/Avatars", ImageName); //  wwwroot\Images\Book\rt4wfj.png
-		using var stream = File.Create(ImgPath);//حولي الباث ده لبيتس علشان اعرف استقبل فيه صوره 
-		await request.Avatar!.CopyToAsync(stream);// (هنا بكلم الاوبريتنج سيستم يبقا يفضل Async)// إستقبل فيه الصورة
-		user.Avatar = ImageName;// قيمه في الداتابيز 
+		using var stream = File.Create(ImgPath);// Make this path to bits to set in it the image 
+		await request.Avatar!.CopyToAsync(stream);// set in it the image [asyc for OS]
+		user.Avatar = ImageName;// URl in db
 		await _context.SaveChangesAsync(cancellationToken);
 
 		return Result.Success();

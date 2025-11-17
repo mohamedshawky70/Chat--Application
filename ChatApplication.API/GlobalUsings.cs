@@ -7,6 +7,8 @@ global using ChatApplication.API.Errors;
 global using ChatApplication.API.FileSetting;
 global using ChatApplication.API.Data;
 global using Microsoft.AspNetCore.Authorization;
+global using ChatApplication.API.Const;
+
 
 
 

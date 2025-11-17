@@ -15,4 +15,6 @@ public static class UserError
 	public static readonly Error UserLockOut = new Error("User.UserLockOut", "User Is LockOut", StatusCodes.Status401Unauthorized);
 	public static readonly Error UserNotFound = new Error("User.NotFound", " User Not Found", StatusCodes.Status401Unauthorized);
 	public static readonly Error InvalidRole = new Error("User.InvalidRole", "Invalid Role", StatusCodes.Status400BadRequest);
+	public static readonly Error UpdateFailed = new Error("User.UpdateFailed", "Update Failed", StatusCodes.Status400BadRequest);
+	public static readonly Error ChangePasswordFailed = new Error("User.ChangePasswordFailed", "Change Password Failed", StatusCodes.Status400BadRequest);
 }
