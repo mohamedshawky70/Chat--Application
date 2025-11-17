@@ -13,10 +13,21 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 		if (user == null)
 			return Result.Failure(UserError.UserNotFound);
 
-		var Extension = Path.GetExtension(request.Avatar?.FileName); //.jpg, .jpeg, .png
+
 		string RootPath = _webHostEnvironment.WebRootPath; //...wwwroot
+		// Delete old avatar in state editing
+		if (user.Avatar != null)
+		{
+			// maybe delete by mistake on server so should checking if it exists on server to avoid null exception
+			var OldAvatar = Path.Combine($"{RootPath}/Avatars",user.Avatar);
+			if (File.Exists(OldAvatar)) 
+					File.Delete(OldAvatar);
+		}
+
+		var Extension = Path.GetExtension(request.Avatar?.FileName); //.jpg, .jpeg, .png
+
 		var ImageName = $"{Guid.NewGuid()}{Extension}";  //[random name] /3456sd23rf.png(generate GUID To be uninq in db) 
-		string ImgPath = Path.Combine($"{RootPath}/Avatars", ImageName); //  wwwroot\Images\Book\rt4wfj.png
+		string ImgPath = Path.Combine($"{RootPath}/Avatars", ImageName); //  wwwroot/Avatar/rt4wfj.png
 		using var stream = File.Create(ImgPath);// Make this path to bits to set in it the image 
 		await request.Avatar!.CopyToAsync(stream);// set in it the image [asyc for OS]
 		user.Avatar = ImageName;// URl in db
