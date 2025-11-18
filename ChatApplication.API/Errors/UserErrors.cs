@@ -1,4 +1,5 @@
 ﻿using ChatApplication.API.Abstractions;
+using System;
 
 namespace ChatApplication.API.Errors;
 
@@ -17,4 +18,5 @@ public static class UserError
 	public static readonly Error InvalidRole = new Error("User.InvalidRole", "Invalid Role", StatusCodes.Status400BadRequest);
 	public static readonly Error UpdateFailed = new Error("User.UpdateFailed", "Update Failed", StatusCodes.Status400BadRequest);
 	public static readonly Error ChangePasswordFailed = new Error("User.ChangePasswordFailed", "Change Password Failed", StatusCodes.Status400BadRequest);
+	public static readonly Error NoActiveUser = new Error("User.NoActiveUser", "No Active User", StatusCodes.Status404NotFound);
 }

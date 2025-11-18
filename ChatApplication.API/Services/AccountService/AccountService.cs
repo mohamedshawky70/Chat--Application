@@ -1,12 +1,10 @@
-﻿using ChatApplication.API.DTOs.User;
+﻿using ChatApplication.API.DTOs.Account;
 using ChatApplication.API.Mapping;
-using Microsoft.AspNetCore.Identity;
 
 namespace ChatApplication.API.Services.AccountService;
 
-public class AccountService(ApplicationDbContext context, UserManager<User> userManager) : IAccountService
+public class AccountService(UserManager<User> userManager) : IAccountService
 {
-	private readonly ApplicationDbContext _context = context;
 	private readonly UserManager<User> _userManager = userManager;
 
 	public async Task<Result<UserProfileResponse>> UserProfileAsync(string userId, CancellationToken canellationToken = default)
@@ -21,7 +19,7 @@ public class AccountService(ApplicationDbContext context, UserManager<User> user
 		if (user == null)
 			return Result.Failure<UserProfileResponse>(UserError.UserNotFound);
 
-		var response = user.MapToResponse();
+		var response = user.MapToUserProfileResponse();
 		return Result.Success(response);
 	}
 	public async Task<Result<UserProfileRequest>> UpdateUserProfileAsync(string userId, UserProfileRequest request, CancellationToken canellationToken = default)

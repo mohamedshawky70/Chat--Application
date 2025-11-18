@@ -1,6 +1,6 @@
 ﻿using ChatApplication.API.Const;
 
-namespace ChatApplication.API.DTOs.User;
+namespace ChatApplication.API.DTOs.Account;
 
 public class UserProfileRequestValidator : AbstractValidator<UserProfileRequest>
 {

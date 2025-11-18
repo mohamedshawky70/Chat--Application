@@ -1,4 +1,5 @@
-﻿using ChatApplication.API.DTOs.User;
+﻿using ChatApplication.API.DTOs.Account;
+using ChatApplication.API.DTOs.User;
 
 namespace ChatApplication.API.Services.AccountService;
 
