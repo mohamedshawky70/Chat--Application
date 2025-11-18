@@ -2,6 +2,7 @@
 //End: /11/2025
 
 using ChatApplication.API;
+using ChatApplication.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//URl hub connection
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
 
