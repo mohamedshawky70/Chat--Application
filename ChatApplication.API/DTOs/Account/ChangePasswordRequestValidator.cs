@@ -1,5 +1,5 @@
 ﻿
-namespace ChatApplication.API.DTOs.User;
+namespace ChatApplication.API.DTOs.Account;
 
 public class ChangePasswordRequestValidator:AbstractValidator<ChangePasswordRequest>
 {

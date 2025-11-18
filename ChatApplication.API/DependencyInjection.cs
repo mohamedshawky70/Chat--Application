@@ -3,6 +3,7 @@ using ChatApplication.API.Data;
 using ChatApplication.API.Services.AccountService;
 using ChatApplication.API.Services.EmailService;
 using ChatApplication.API.Services.FileService;
+using ChatApplication.API.Services.UserService;
 using ChatApplication.API.Settings;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -70,6 +71,7 @@ public static class DependencyInjection
 		services.AddScoped<IJwtProvider, JwtProvider>();
 		services.AddScoped<IFileService, FileService>();
 		services.AddScoped<IAccountService, AccountService>();
+		services.AddScoped<IUserServeic, UserService>();
 
 		//Add Fluent Validation
 		services.AddFluentValidationAutoValidation()
