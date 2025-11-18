@@ -81,6 +81,8 @@ public static class DependencyInjection
 		services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 		services.AddHangfireServer();
 
+		//Add SingnalR
+		services.AddSignalR();
 
 
 		return services;
