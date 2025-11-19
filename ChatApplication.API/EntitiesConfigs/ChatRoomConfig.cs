@@ -10,6 +10,9 @@ public class ChatRoomConfig : IEntityTypeConfiguration<ChatRoom>
 		builder.Property(cr => cr.Name)
 			.HasMaxLength(200);
 
+		builder.HasIndex(cr=>cr.Name)
+			.IsUnique();
+
 		builder.Property(cr => cr.Description)
 			.HasMaxLength(500);
 	}
