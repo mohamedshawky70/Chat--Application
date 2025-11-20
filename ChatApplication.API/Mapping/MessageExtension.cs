@@ -12,9 +12,15 @@ public static class MessageExtension
 				message.SenderId,
 				message.ReceiverId,
 				message.SentAt,
+				message.IsRead,
 				message.Type.ToString(),
 				SenderName: $"{message.Sender.FirstName} {message.Sender.LastName}"?? "Anonymous",
 				message.ChatRoomId
 			);
+	}
+	
+	public static IEnumerable<MessageResponse> MapToMessageResponse(this IEnumerable<Message> messages)
+	{
+		return messages.Select(m =>m.MapToMessageResponse());
 	}
 }
