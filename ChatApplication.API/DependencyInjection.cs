@@ -4,6 +4,7 @@ using ChatApplication.API.Services.AccountService;
 using ChatApplication.API.Services.EmailService;
 using ChatApplication.API.Services.FileService;
 using ChatApplication.API.Services.MessagesService;
+using ChatApplication.API.Services.RoomService;
 using ChatApplication.API.Services.UserService;
 using ChatApplication.API.Settings;
 using Hangfire;
@@ -74,6 +75,7 @@ public static class DependencyInjection
 		services.AddScoped<IAccountService, AccountService>();
 		services.AddScoped<IUserServeic, UserService>();
 		services.AddScoped<IMessagesService, MessagesService>();
+		services.AddScoped<IRoomService, RoomService>();
 
 		//Add Fluent Validation
 		services.AddFluentValidationAutoValidation()

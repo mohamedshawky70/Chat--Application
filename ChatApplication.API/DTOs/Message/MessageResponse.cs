@@ -1,6 +1,4 @@
-﻿using ChatApplication.API.enums;
-
-namespace ChatApplication.API.DTOs;
+﻿namespace ChatApplication.API.DTOs.Message;
 
 public record MessageResponse
 (

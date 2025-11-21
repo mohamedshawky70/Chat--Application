@@ -7,7 +7,7 @@ public class ChatRoom
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsPrivate { get; set; }
-    public int CreatorId { get; set; }       
-    public ICollection<Message> Messages { get; set; } = [];
+    public string CreatorUserId { get; set; } =null!;
+	public ICollection<Message> Messages { get; set; } = [];
     public ICollection<ChatRoomUser> ChatRoomUsers { get; set; } = [];
 }
