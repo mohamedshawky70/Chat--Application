@@ -1,4 +1,4 @@
-﻿using ChatApplication.API.DTOs;
+﻿using ChatApplication.API.DTOs.Message;
 
 namespace ChatApplication.API.Mapping;
 
@@ -14,7 +14,7 @@ public static class MessageExtension
 				message.SentAt,
 				message.IsRead,
 				message.Type.ToString(),
-				SenderName: $"{message.Sender.FirstName} {message.Sender.LastName}"?? "Anonymous",
+				SenderName: $"{message.Sender?.FirstName} {message.Sender?.LastName}"?? "Anonymous",
 				message.ChatRoomId
 			);
 	}

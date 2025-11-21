@@ -175,21 +175,21 @@ public class ChatHub(ApplicationDbContext context):Hub
 		}
 	}
 
-	//MarkMessageAsRead
-	public async Task MarkMessageAsRead(int messageId)
-	{
-		var message=await _context.Messages.FindAsync(messageId);
-		if (message != null)
-		{
-			message.IsRead=true;
-			await _context.SaveChangesAsync();
-		}
-		if (_UserConnections.TryGetValue(Context.ConnectionId, out var connections))
-		{
-			foreach (var connectionId in connections)
-			{
-				await Clients.Client(connectionId).SendAsync("MessageRead",messageId);
-			}
-		}
-	}
+	//handled by a RESTful Controller, not the real-time Hub.
+	//public async Task MarkMessageAsRead(int messageId)
+	//{
+	//	var message=await _context.Messages.FindAsync(messageId);
+	//	if (message != null)
+	//	{
+	//		message.IsRead=true;
+	//		await _context.SaveChangesAsync();
+	//	}
+	//	if (_UserConnections.TryGetValue(Context.ConnectionId, out var connections))
+	//	{
+	//		foreach (var connectionId in connections)
+	//		{
+	//			await Clients.Client(connectionId).SendAsync("MessageRead",messageId);
+	//		}
+	//	}
+	//}
 }

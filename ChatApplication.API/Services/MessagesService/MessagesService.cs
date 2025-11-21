@@ -1,4 +1,4 @@
-﻿using ChatApplication.API.DTOs;
+﻿using ChatApplication.API.DTOs.Message;
 using ChatApplication.API.Mapping;
 
 namespace ChatApplication.API.Services.MessagesService;
@@ -55,12 +55,68 @@ public class MessagesService(ApplicationDbContext context) : IMessagesService
 		var response = messages.MapToMessageResponse();
 		return Result.Success(response);
 	}
-	public async Task<Result<int>> GetUnreadCountAsync(string userId, CancellationToken cancellationToken = default)
+	public async Task<Result<int>> GetUnreadMessagesCountAsync(string userId, CancellationToken cancellationToken = default)
 	{
 		var messages = await _context.Messages
 			.Where(m => m.ReceiverId == userId && !m.IsRead)
 			.CountAsync(cancellationToken);
 
 		return Result.Success(messages);
+	}
+	
+	public async Task<Result> MarkMessageAsReadAsync(int messageId ,string userId, CancellationToken cancellationToken = default)
+	{ 
+		var message = await _context.Messages
+			.FirstOrDefaultAsync(m => m.Id == messageId && m.ReceiverId == userId, cancellationToken);
+
+		if (message is null)
+			return Result.Failure(MessageErrors.NoMessagesUnread);
+		
+			message.IsRead = true;
+
+		await _context.SaveChangesAsync(cancellationToken);
+		return Result.Success();
+
+	}
+	
+	public async Task<Result> MarkAllMessageAsReadAsync(string userId, CancellationToken cancellationToken = default)
+	{ 
+		var messages = await _context.Messages
+			.Where(m => m.ReceiverId == userId && !m.IsRead)
+			.ToListAsync(cancellationToken);
+		if (messages is null || messages.Count == 0)
+			return Result.Failure(MessageErrors.NoMessagesUnread);
+		
+		foreach (var message in messages)
+			message.IsRead = true;
+
+		await _context.SaveChangesAsync(cancellationToken);
+		return Result.Success();
+
+	}
+
+	public async Task<Result<MessageResponse>> EditMessageAsync(int messageId,EditMessageRequest request, CancellationToken cancellationToken = default)
+	{
+		var message = await _context.Messages.FindAsync(messageId);
+		if (message is null)
+			return Result.Failure<MessageResponse>(MessageErrors.MessageNotFound);
+
+		message.Content=request.NewContent;
+		await _context.SaveChangesAsync(cancellationToken);
+
+		var response = message.MapToMessageResponse();
+		return Result.Success(response);
+	}
+	public async Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default)
+	{
+		var message = await _context.Messages
+			.FirstOrDefaultAsync(m => m.Id == messageId && m.SenderId == userId, cancellationToken);
+
+		if (message is null)
+			return Result.Failure(MessageErrors.MessageNotFound);
+
+		 message.IsDeleted = true;
+		await _context.SaveChangesAsync(cancellationToken);
+		return Result.Success();
 	}
 }
