@@ -13,5 +13,6 @@ public class User: IdentityUser
     public List<RefreshToken> RefreshTokens { get; set; } = [];
     public ICollection<Message> SentMessages { get; set; } = [];
     public ICollection<Message> ReceivedMessages { get; set; } = [];
+    public ICollection<Message> PinnedMessages { get; set; } = [];
     public ICollection<ChatRoomUser> ChatRoomUsers { get; set; } = [];
 }

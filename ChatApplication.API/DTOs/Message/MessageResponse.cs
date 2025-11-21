@@ -7,6 +7,8 @@ public record MessageResponse
 	string? ReseiverId,
 	DateTime SentAt,
 	bool IsRead,
+	bool IsPinned,
+	string PinnedBy,
 	string Type,
 	string SenderName,
 	int? ChatRoomId
