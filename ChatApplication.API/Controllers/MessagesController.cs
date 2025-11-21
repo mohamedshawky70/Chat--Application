@@ -58,6 +58,35 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 		var result = await _messagesService.EditMessageAsync(messageId, request, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
+
+	[HttpGet("search/{userId1}/{userId2}")]
+	public async Task<IActionResult> SearchMessages([FromRoute] string userId1, [FromRoute] string userId2, [FromBody] FilterRequest filter, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.MessageSearchAsync(userId1, userId2, filter, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
+	[HttpGet("room_search/{roomId}")]
+	public async Task<IActionResult> SearchRoomMessages([FromRoute] int roomId, [FromBody] FilterRequest filter, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.SearchRoomMessagesAsync(roomId, filter, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
+	[HttpPost("forward/{messageId}")]
+	public async Task<IActionResult> ForwardMessage([FromRoute] int messageId, [FromBody] ForwardMessageRequest request,  CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.ForwardMessageAsync(messageId, request, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
+	[HttpPut("pin/{messageId}")]
+	public async Task<IActionResult> PinMessage([FromRoute] int messageId,[FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.PinnedMessageAsync(messageId,userId,roomId, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
 	[HttpPut("delete/{messageId}")] //Soft delete
 	public async Task<IActionResult> DeleteMessage([FromRoute] int messageId,[FromQuery] string userId, CancellationToken cancellationToken = default)
 	{

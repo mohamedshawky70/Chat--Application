@@ -19,6 +19,11 @@ public class MessageConfig : IEntityTypeConfiguration<Message>
 			.WithMany(u => u.ReceivedMessages)
 			.HasForeignKey(m => m.ReceiverId)
 			.OnDelete(DeleteBehavior.Restrict);
+		
+		builder.HasOne(m => m.PinnedBy)
+			.WithMany(u => u.PinnedMessages)
+			.HasForeignKey(m => m.PinnedId)
+			.OnDelete(DeleteBehavior.Restrict);
 
 		builder.HasOne(m => m.ChatRoom)
 			.WithMany(c => c.Messages)
