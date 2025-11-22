@@ -14,8 +14,8 @@ public static class MessageExtension
 				message.SentAt,
 				message.IsRead,
 				message.IsPinned,
-				PinnedBy :message.PinnedId==message.SenderId? $"{message.Sender.FirstName} {message.Sender.LastName}":
-										   $"{message.Receiver!.FirstName} {message.Receiver.LastName}",
+				PinnedBy :message.PinnedId==message.SenderId? $"{message.Sender?.FirstName} {message.Sender?.LastName}":
+										   $"{message.Receiver?.FirstName} {message.Receiver?.LastName}",
 				message.Type.ToString(),
 				SenderName: $"{message.Sender?.FirstName} {message.Sender?.LastName}"?? "Anonymous",
 				message.ChatRoomId

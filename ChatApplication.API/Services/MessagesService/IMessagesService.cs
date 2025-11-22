@@ -26,5 +26,9 @@ public interface IMessagesService
 
 	Task<Result<MessageResponse>> PinnedMessageAsync(int messageId, string userId, int? roomId, CancellationToken cancellationToken = default);
 
+	Task<Result<IEnumerable<MessageResponse>>> GetpinnedMessagesAsync(string userId, int? roomId, CancellationToken cancellationToken = default);
+	
+	Task<Result<MessageResponse>> UnpinnedMessageAsync(int messageId, string userId, int? roomId, CancellationToken cancellationToken = default);
+
 	Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default);
 }

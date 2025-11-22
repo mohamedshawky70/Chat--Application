@@ -87,6 +87,21 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
+	[HttpGet("pinned")]
+	public async Task<IActionResult> GetPinnedMessages([FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.GetpinnedMessagesAsync(userId,roomId, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
+
+	[HttpPut("unpin/{messageId}")]
+	public async Task<IActionResult> UnpinMessage([FromRoute] int messageId,[FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.UnpinnedMessageAsync(messageId,userId,roomId, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
 	[HttpPut("delete/{messageId}")] //Soft delete
 	public async Task<IActionResult> DeleteMessage([FromRoute] int messageId,[FromQuery] string userId, CancellationToken cancellationToken = default)
 	{

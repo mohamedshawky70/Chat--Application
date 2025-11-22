@@ -1,4 +1,5 @@
 ﻿using ChatApplication.API.DTOs.File;
+using ChatApplication.API.Mapping;
 
 namespace ChatApplication.API.Services.FileService;
 
@@ -6,7 +7,7 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 {
 	private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 	private readonly ApplicationDbContext _context = context;
-
+	private readonly string _filePath = $"{webHostEnvironment.WebRootPath}/Uploaded";
 	public async Task<Result> UploadProfileAvatarAsync(UploadProfileAvatarRequest request, CancellationToken cancellationToken = default)
 	{
 		var user = await _context.Users.FindAsync(request.UserId);
@@ -29,10 +30,30 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 		var ImageName = $"{Guid.NewGuid()}{Extension}";  //[random name] /3456sd23rf.png(generate GUID To be uninq in db) 
 		string ImgPath = Path.Combine($"{RootPath}/Avatars", ImageName); //  wwwroot/Avatar/rt4wfj.png
 		using var stream = File.Create(ImgPath);// Make this path to bits to set in it the image 
-		await request.Avatar!.CopyToAsync(stream);// set in it the image [asyc for OS]
+		await request.Avatar!.CopyToAsync(stream, cancellationToken);// set in it the image [asyc for OS]
 		user.Avatar = ImageName;// URl in db
 		await _context.SaveChangesAsync(cancellationToken);
 
 		return Result.Success();
+	}
+
+	public async Task<Result<Guid>> UploadFileAsync(UploadFileRquest request,int messageId, CancellationToken cancellationToken = default)
+	{
+		var randomFileName = Path.GetRandomFileName();//Fake name with fake extension because if anyone reach these files on server
+
+		var uploadFile =request.MapToUploadFile();
+		uploadFile.StoredFileName = randomFileName;
+		uploadFile.MessageId = messageId;
+
+		//Save on server
+		var path = Path.Combine(_filePath, randomFileName);//string1+string2
+		using var stream = File.Create(path);//حولي الباث ده لبيتس (فايل) علشان اعرف استقبل فيه الفايل
+		await request.File.CopyToAsync(stream, cancellationToken);// إستقبل الفايل اللي جاي من اليوزر في المكان ده
+
+		// Save on database
+		await _context.UploadFiles.AddAsync(uploadFile, cancellationToken);
+		await _context.SaveChangesAsync(cancellationToken);
+
+		return Result.Success(uploadFile.Id);
 	}
 }

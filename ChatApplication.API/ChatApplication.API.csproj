@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Avatars\" />
+    <Folder Include="wwwroot\Uploaded\" />
   </ItemGroup>
 
 </Project>

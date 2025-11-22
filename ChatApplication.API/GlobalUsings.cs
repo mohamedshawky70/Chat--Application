@@ -10,6 +10,8 @@ global using ChatApplication.API.Const;
 global using ChatApplication.API.Services.UserService;
 global using Microsoft.AspNetCore.Identity;
 global using ChatApplication.API.DTOs.User;
+global using ChatApplication.API.enums;
+
 
 
 

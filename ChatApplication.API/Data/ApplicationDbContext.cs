@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
 	public DbSet<ChatRoom> ChatRooms { get; set; }
 	public DbSet<ChatRoomUser> ChatRoomUsers { get; set; }
 	public DbSet<Message> Messages { get; set; }
+	public DbSet<UploadFile>  UploadFiles { get; set; }
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
