@@ -19,4 +19,5 @@ public class Message
     public User? PinnedBy { get; set; }
     public int? ChatRoomId { get; set; }
     public ChatRoom? ChatRoom { get; set; }
+    public ICollection<UploadFile> Attachments { get; set; } = [];
 }

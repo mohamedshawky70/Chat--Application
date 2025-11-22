@@ -1,17 +1,15 @@
-﻿using Azure;
-using ChatApplication.API.DTOs.Message;
-using ChatApplication.API.Entites;
+﻿using ChatApplication.API.DTOs.Message;
 using ChatApplication.API.Hubs;
 using ChatApplication.API.Mapping;
 using Microsoft.AspNetCore.SignalR;
-using System;
 
 namespace ChatApplication.API.Services.MessagesService;
 
-public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub> hubContext) : IMessagesService
+//TODO:SendPrivateMessage
+public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> hubContext) : IMessagesService
 {
 	private readonly ApplicationDbContext _context = context;
-	private readonly IHubContext<ChatHub> _hubContext=hubContext;
+	private readonly IHubContext<ChatHub> _hubContext = hubContext;
 
 	public async Task<Result<IEnumerable<MessageResponse>>> GetPrivateMessagesAsync(string userId1, string userId2, CancellationToken cancellationToken = default)
 	{
@@ -165,10 +163,10 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 	{
 		var message = await _context.Messages
 			.AsNoTracking()
-			.Include(m=>m.Sender)
+			.Include(m => m.Sender)
 			.FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
 
-		if(message is null)
+		if (message is null)
 			return Result.Failure<IEnumerable<MessageResponse>>(MessageErrors.MessageNotFound);
 
 		IEnumerable<MessageResponse> response = null!;
@@ -179,7 +177,7 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 		{
 			foreach (var ReceiverId in request.ForwardToUserIds)
 			{
-				if(ReceiverId==message.SenderId)//don't forward to self
+				if (ReceiverId == message.SenderId)//don't forward to self
 					continue;
 
 				var newMessage = new Message
@@ -188,7 +186,7 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 					IsRead = false,
 					Type = message.Type,
 					SenderId = message.SenderId, // Return thinking
-					Content= string.IsNullOrEmpty(request.Caption)?$"Forwarded message: {message.Content}"
+					Content = string.IsNullOrEmpty(request.Caption) ? $"Forwarded message: {message.Content}"
 															: $"{request.Caption} Forwarded: {message.Content}",
 					ReceiverId = ReceiverId
 				};
@@ -207,7 +205,7 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 					IsRead = false,
 					Type = message.Type,
 					SenderId = message.SenderId, // Return thinking
-					Content= string.IsNullOrEmpty(request.Caption)?$"Forwarded message: {message.Content}"
+					Content = string.IsNullOrEmpty(request.Caption) ? $"Forwarded message: {message.Content}"
 															: $"{request.Caption} Forwarded: {message.Content}",
 					ReceiverId = null,
 					ChatRoomId = roomId
@@ -222,7 +220,7 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 		response = forwardedMessages.MapToMessageResponse();
 
 		// Start real-time
-		foreach(var fMessage in forwardedMessages)
+		foreach (var fMessage in forwardedMessages)
 		{
 			if (fMessage.ReceiverId != null)
 			{
@@ -240,42 +238,107 @@ public class MessagesService(ApplicationDbContext context , IHubContext<ChatHub>
 	//Pin message in Private or Room
 	public async Task<Result<MessageResponse>> PinnedMessageAsync(int messageId, string userId, int? roomId, CancellationToken cancellationToken = default)
 	{
-		MessageResponse response=null!;
+		MessageResponse response = null!;
 		// Sender or receiver can pin the message in private chat
+		var message = new Message();
 		if (userId != null && roomId == 0)
 		{
-			var message = await _context.Messages
-				.Include(m => m.Sender)
-				.Include(m => m.Receiver)
-				.FirstOrDefaultAsync(m => m.Id == messageId && (m.SenderId == userId ||
-									 m.ReceiverId == userId), cancellationToken);
+			message = await _context.Messages
+		   .Include(m => m.Sender)
+		   .Include(m => m.Receiver)
+		   .FirstOrDefaultAsync(m => m.Id == messageId && (m.SenderId == userId ||
+								m.ReceiverId == userId), cancellationToken);
 			if (message is null)
 				return Result.Failure<MessageResponse>(MessageErrors.MessageNotFound);
 
 			message.IsPinned = true;
 			message.PinnedId = userId;
 			await _context.SaveChangesAsync(cancellationToken);
-			response = message.MapToMessageResponse();
 		}
 		else //pin in Room
 		{
-			var message = await _context.Messages
-				.Include(m => m.Sender)
-				.Include(m => m.Receiver)
-				.FirstOrDefaultAsync(m => m.Id == messageId && m.ChatRoomId==roomId && (m.SenderId == userId ||
-									 m.ReceiverId == userId), cancellationToken);
+			message = await _context.Messages
+			.Include(m => m.Sender)
+			.Include(m => m.Receiver)
+			.FirstOrDefaultAsync(m => m.Id == messageId && m.ChatRoomId == roomId && (m.SenderId == userId ||
+								 m.ReceiverId == userId), cancellationToken);
 			if (message is null)
 				return Result.Failure<MessageResponse>(MessageErrors.MessageNotFound);
 
 			message.IsPinned = true;
 			message.PinnedId = userId;
 			await _context.SaveChangesAsync(cancellationToken);
-			response = message.MapToMessageResponse();
 		}
+		response = message.MapToMessageResponse();
 
 		//Start real-time 
 		await _hubContext.Clients.Group(roomId != null ? $"ChatRoom-{roomId}" : $"PrivateChat-{userId}")
 			.SendAsync("MessagePinned", response, cancellationToken);
+		//End real-time
+		return Result.Success(response);
+	}
+
+	public async Task<Result<IEnumerable<MessageResponse>>> GetpinnedMessagesAsync(string userId, int? roomId, CancellationToken cancellationToken = default)
+	{
+		var pinnedMessages = new List<Message>();
+		if (userId != null && roomId == 0)
+		{
+			pinnedMessages = await _context.Messages
+			.Where(m => (m.SenderId == userId || m.ReceiverId == userId) && m.IsPinned)
+			.Include(m => m.Sender)
+			.Include(m => m.Receiver)
+			.ToListAsync(cancellationToken);
+			if (pinnedMessages is null || pinnedMessages.Count == 0)
+				return Result.Failure<IEnumerable<MessageResponse>>(MessageErrors.NoPinnedMessagesFound);
+		}
+		else
+		{
+			pinnedMessages = await _context.Messages
+		   .Where(m => m.ChatRoomId == roomId && m.IsPinned)
+		   .Include(m => m.Sender)
+		   .Include(m => m.Receiver)
+		   .ToListAsync(cancellationToken);
+			if (pinnedMessages is null || pinnedMessages.Count == 0)
+				return Result.Failure<IEnumerable<MessageResponse>>(MessageErrors.NoPinnedMessagesFound);
+		}
+		var response = pinnedMessages.MapToMessageResponse();
+		return Result.Success(response);
+	}
+
+	public async Task<Result<MessageResponse>> UnpinnedMessageAsync(int messageId, string userId, int? roomId, CancellationToken cancellationToken = default)
+	{
+		MessageResponse response = null!;
+		// Sender or receiver can unpin the message in private chat
+		var message = new Message();
+		if (userId != null && roomId == 0)
+		{
+			message = await _context.Messages
+			.FirstOrDefaultAsync(m => m.Id == messageId && (m.SenderId == userId ||
+								 m.ReceiverId == userId), cancellationToken);
+			if (message is null)
+				return Result.Failure<MessageResponse>(MessageErrors.MessageNotFound);
+
+			message.IsPinned = false;
+			message.PinnedId = null;
+			await _context.SaveChangesAsync(cancellationToken);
+		}
+		else //unpin in Room
+		{
+			message = await _context.Messages
+		   .FirstOrDefaultAsync(m => m.Id == messageId && m.ChatRoomId == roomId && (m.SenderId == userId ||
+								m.ReceiverId == userId), cancellationToken);
+			if (message is null)
+				return Result.Failure<MessageResponse>(MessageErrors.MessageNotFound);
+
+			message.IsPinned = false;
+			message.PinnedId = null;
+			await _context.SaveChangesAsync(cancellationToken);
+		}
+		response = message.MapToMessageResponse();
+
+		//Start real-time 
+		await _hubContext.Clients.Group(roomId != null ? $"ChatRoom-{roomId}" : $"PrivateChat-{userId}")
+			.SendAsync("MessageUnpinned", response, cancellationToken);
 		//End real-time
 		return Result.Success(response);
 	}
