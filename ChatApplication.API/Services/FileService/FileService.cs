@@ -56,4 +56,20 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 
 		return Result.Success(uploadFile.Id);
 	}
+
+	public async Task<(byte[] fileContent, string ContentType, string fileName)>DownloadFileAsync(Guid id, CancellationToken cancellationToken = default)
+	{
+		var file = await _context.UploadFiles.FindAsync(id, cancellationToken);
+		if (file is null)
+			return ([], string.Empty, string.Empty);
+		var path = Path.Combine(_filePath, file.StoredFileName);
+		MemoryStream memoryStream = new();
+		using FileStream fileStream = new(path, FileMode.Open);// اقري اللي في الباث ده
+		fileStream.CopyTo(memoryStream);
+
+		memoryStream.Position = 0;
+
+		return (memoryStream.ToArray(), file.ContentType, file.FileName);
+
+	}
 }

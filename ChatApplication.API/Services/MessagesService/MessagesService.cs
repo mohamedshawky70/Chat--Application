@@ -1,15 +1,72 @@
-﻿using ChatApplication.API.DTOs.Message;
+﻿using ChatApplication.API.DTOs.File;
+using ChatApplication.API.DTOs.Message;
 using ChatApplication.API.Hubs;
 using ChatApplication.API.Mapping;
+using ChatApplication.API.Services.FileService;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChatApplication.API.Services.MessagesService;
 
-//TODO:SendPrivateMessage
-public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> hubContext) : IMessagesService
+public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> hubContext, IFileService fileService) : IMessagesService
 {
 	private readonly ApplicationDbContext _context = context;
 	private readonly IHubContext<ChatHub> _hubContext = hubContext;
+	private readonly IFileService _fileService = fileService;
+
+	public async Task<Result<MessageResponse>> SendPrivateMessageAsync(string senderId, string recieverId, string content, IFormFile? file, CancellationToken cancellationToken = default)
+	{
+		var reciever = await _context.Users.FindAsync(recieverId);
+		if (reciever is null)
+			return Result.Failure<MessageResponse>(MessageErrors.UserNotFound);
+
+		var type = MessageType.Text;
+
+		var message = new Message()
+		{
+			SenderId = senderId,
+			Content = content,
+			ReceiverId = recieverId,
+			SentAt = DateTime.UtcNow,
+			IsRead = false,
+			Type = type
+		};
+
+		await _context.Messages.AddAsync(message, cancellationToken);
+		await _context.SaveChangesAsync(cancellationToken);
+
+		if (file != null)
+			await ContentType(file, message);
+
+		var response = message.MapToMessageResponse();
+		return Result.Success(response);
+	}
+
+	public async Task<Result<MessageResponse>> SendRoomMessageAsync(string senderId, int roomId, string content, IFormFile? file, CancellationToken cancellationToken = default)
+	{
+		var room = await _context.ChatRooms.FindAsync(roomId);
+		if (room is null)
+			return Result.Failure<MessageResponse>(RoomErrors.NoRoomsFound);
+
+		var type = MessageType.Text;
+
+		var message = new Message()
+		{
+			SenderId = senderId,
+			Content = content,
+			ChatRoomId = roomId,
+			SentAt = DateTime.UtcNow,
+			IsRead = false,
+		};
+
+		await _context.Messages.AddAsync(message, cancellationToken);
+		await _context.SaveChangesAsync(cancellationToken);
+
+		if (file != null)
+			await ContentType(file, message);
+
+		var response = message.MapToMessageResponse();
+		return Result.Success(response);
+	}
 
 	public async Task<Result<IEnumerable<MessageResponse>>> GetPrivateMessagesAsync(string userId1, string userId2, CancellationToken cancellationToken = default)
 	{
@@ -343,6 +400,11 @@ public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> 
 		return Result.Success(response);
 	}
 
+	public async Task<Result<(byte[] fileContent, string ContentType, string fileName)>> DownloadFileAsync(Guid id, CancellationToken cancellationToken = default)
+	{
+		var response = await _fileService.DownloadFileAsync(id, cancellationToken);
+		return Result.Success(response);
+	}
 	public async Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default)
 	{
 		var message = await _context.Messages
@@ -354,5 +416,22 @@ public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> 
 		message.IsDeleted = true;
 		await _context.SaveChangesAsync(cancellationToken);
 		return Result.Success();
+	}
+
+	private async Task ContentType(IFormFile file, Message message)
+	{
+		var type = MessageType.Text;
+		if (file.ContentType.StartsWith("image/"))
+			type = MessageType.Image;
+		if (file.ContentType.StartsWith("application/") ||
+			file.ContentType.StartsWith("video/") ||
+			file.ContentType.StartsWith("audio/"))
+			type = MessageType.File;
+
+		message.Type = type;
+		await _context.SaveChangesAsync();
+
+		var uploadFileRquest = new UploadFileRquest(file);
+		await _fileService.UploadFileAsync(uploadFileRquest, message.Id);
 	}
 }

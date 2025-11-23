@@ -4,8 +4,8 @@ namespace ChatApplication.API.DTOs.Message;
 public record SendMessageRequest
 (
 	string? Content,
-    MessageType Type = MessageType.Text,
+    int ChatRoomId,
+    string? SenderId = null,
     string? ReceiverId = null,
-    int? ChatRoomId = null,
-    List<IFormFile>? Files = null
+    IFormFile? File = null
 );
