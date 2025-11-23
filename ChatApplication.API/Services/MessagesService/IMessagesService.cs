@@ -4,6 +4,10 @@ namespace ChatApplication.API.Services.MessagesService;
 
 public interface IMessagesService
 {
+	Task<Result<MessageResponse>> SendPrivateMessageAsync(string senderId, string recieverId, string content, IFormFile? file, CancellationToken cancellationToken = default);
+	
+	Task<Result<MessageResponse>> SendRoomMessageAsync(string senderId, int roomId, string content, IFormFile? file, CancellationToken cancellationToken = default);
+
 	Task<Result<IEnumerable<MessageResponse>>> GetPrivateMessagesAsync(string userId1, string userId2, CancellationToken cancellationToken = default);
 
 	Task<Result<IEnumerable<MessageResponse>>> GetRoomMessagesAsync(int roomId, int limit, CancellationToken cancellationToken = default);
@@ -29,6 +33,8 @@ public interface IMessagesService
 	Task<Result<IEnumerable<MessageResponse>>> GetpinnedMessagesAsync(string userId, int? roomId, CancellationToken cancellationToken = default);
 	
 	Task<Result<MessageResponse>> UnpinnedMessageAsync(int messageId, string userId, int? roomId, CancellationToken cancellationToken = default);
+
+	Task<Result<(byte[] fileContent, string ContentType, string fileName)>> DownloadFileAsync(Guid id, CancellationToken cancellationToken = default);
 
 	Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default);
 }

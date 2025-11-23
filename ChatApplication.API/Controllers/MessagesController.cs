@@ -10,6 +10,22 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 {
 	private readonly IMessagesService _messagesService = messagesService;
 
+	//If you don't wan't real-time
+	[HttpPost("private")]
+	//With Attachment
+	public async Task<IActionResult> SendPrivateMessage([FromForm] SendMessageRequest request , CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.SendPrivateMessageAsync(request.SenderId!,request.ReceiverId!,request.Content!,request.File, cancellationToken);
+		return result.IsSuccess ? CreatedAtAction(nameof(GetPrivateMessages), new { userId1 = request.SenderId, userId2 = request.ReceiverId }, result.Value()) : NotFound(result.Error);
+	}
+	
+	[HttpPost("room")]
+	public async Task<IActionResult> SendRoomMessage([FromForm] SendMessageRequest request , CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.SendRoomMessageAsync(request.SenderId!,request.ChatRoomId!,request.Content!,request.File, cancellationToken);
+		return result.IsSuccess ? CreatedAtAction(nameof(GetRoomMessages), new { roomId = request.ChatRoomId}, result.Value()) : NotFound(result.Error);
+	}
+
 	[HttpGet("private/{userId1}/{userId2}")]
 	public async Task<IActionResult> GetPrivateMessages([FromRoute] string userId1, [FromRoute] string userId2, CancellationToken cancellationToken = default)
 	{
@@ -100,6 +116,13 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 	{
 		var result = await _messagesService.UnpinnedMessageAsync(messageId,userId,roomId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
+	[HttpGet("download/{id}")]
+	public async Task<IActionResult> DownloadAttachment([FromRoute] Guid id, CancellationToken cancellationToken = default)
+	{
+		var result = await _messagesService.DownloadFileAsync(id, cancellationToken);
+		return result.IsSuccess ? File(result.Value().fileContent, result.Value().ContentType, result.Value().fileName) : NotFound(result.Error);
 	}
 
 	[HttpPut("delete/{messageId}")] //Soft delete

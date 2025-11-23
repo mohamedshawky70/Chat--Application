@@ -1,13 +1,16 @@
 ﻿using ChatApplication.API.Entites;
 using ChatApplication.API.enums;
 using ChatApplication.API.Mapping;
+using ChatApplication.API.Services.MessagesService;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChatApplication.API.Hubs;
 
-public class ChatHub(ApplicationDbContext context):Hub
+public class ChatHub(ApplicationDbContext context, IMessagesService messagesService):Hub
 {
 	private readonly ApplicationDbContext _context = context;
+	private readonly IMessagesService _messagesService=messagesService;
+
 	private readonly Dictionary<string, string> _connections = [];
 	private readonly Dictionary<string, HashSet<string>> _UserConnections = [];// The same user can have multiple connections (multiple tabs)
 	public override async Task OnConnectedAsync()
@@ -62,42 +65,25 @@ public class ChatHub(ApplicationDbContext context):Hub
 	}
 
 	//SendPrivateMessage
-	public async Task SendPrivateMessage(string ReceiverId, string content)
+	public async Task SendPrivateMessage(string receiverId, string content, IFormFile? file)
 	{
-		if (!_connections.TryGetValue(Context.ConnectionId, out string? SenderId))
+		if (!_connections.TryGetValue(Context.ConnectionId, out string? senderId))
 			return;
 
-		var message = new Message
-		{
-			Content = content,
-			SenderId = SenderId!,
-			ReceiverId = ReceiverId,
-			SentAt = DateTime.UtcNow,
-			Type = MessageType.Text
-		};
-		_context.Messages.Add(message);
-		await _context.SaveChangesAsync();
-		await Clients.Caller.SendAsync("ReceivePrivateMessage", message.MapToMessageResponse());
-		
+		//Validation and save in db handled in service not here
+		var message = await _messagesService.SendPrivateMessageAsync(senderId!, receiverId, content,file);
+		//Real-time here not in service because i can't get ConnectionId from IHubContext<ChatHub>
+		await Clients.Caller.SendAsync("ReceivePrivateMessage", message);
 	}
 
 	//SendRoomMessage
-	public async Task SendRoomMessage(int RoomId, string content)
+	public async Task SendRoomMessage(int roomId, string content, IFormFile? file)
 	{
-		if (!_connections.TryGetValue(Context.ConnectionId, out string? SenderId))
+		if (!_connections.TryGetValue(Context.ConnectionId, out string? senderId))
 			return;
 
-		var message = new Message
-		{
-			Content = content,
-			SenderId= SenderId!,
-			ChatRoomId = RoomId,
-			SentAt = DateTime.UtcNow,
-			Type = MessageType.Text
-		};
-		_context.Messages.Add(message);
-		await _context.SaveChangesAsync();
-		await Clients.Group($"Room_{RoomId}").SendAsync("ReceiveRoomMessage", message.MapToMessageResponse());
+		var message= await _messagesService.SendRoomMessageAsync(senderId, roomId, content, file);
+		await Clients.Group($"Room_{roomId}").SendAsync("ReceiveRoomMessage", message);
 	}
 
 	//JoinRoom
