@@ -37,6 +37,7 @@ public class ChatHub(ApplicationDbContext context, IMessagesService messagesServ
 		{
 			user.ConnectionId = connectionId;
 			user.IsOnline = true;
+			user.LastSeen=DateTime.UtcNow;
 			await _context.SaveChangesAsync();
 
 			await Clients.All.SendAsync("UserStatusChanged", userId, user.MapToUserResponse());
@@ -55,6 +56,7 @@ public class ChatHub(ApplicationDbContext context, IMessagesService messagesServ
 			{
 				user.ConnectionId = null;
 				user.IsOnline = false;
+				user.LastSeen=DateTime.UtcNow;
 				await _context.SaveChangesAsync();
 
 				await Clients.All.SendAsync("UserStatusChanged", user.Id, user.MapToUserResponse());
@@ -160,22 +162,4 @@ public class ChatHub(ApplicationDbContext context, IMessagesService messagesServ
 			});
 		}
 	}
-
-	//handled by a RESTful Controller, not the real-time Hub.
-	//public async Task MarkMessageAsRead(int messageId)
-	//{
-	//	var message=await _context.Messages.FindAsync(messageId);
-	//	if (message != null)
-	//	{
-	//		message.IsRead=true;
-	//		await _context.SaveChangesAsync();
-	//	}
-	//	if (_UserConnections.TryGetValue(Context.ConnectionId, out var connections))
-	//	{
-	//		foreach (var connectionId in connections)
-	//		{
-	//			await Clients.Client(connectionId).SendAsync("MessageRead",messageId);
-	//		}
-	//	}
-	//}
 }

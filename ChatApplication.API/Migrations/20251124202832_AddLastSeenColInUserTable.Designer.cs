@@ -4,6 +4,7 @@ using ChatApplication.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatApplication.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251124202832_AddLastSeenColInUserTable")]
+    partial class AddLastSeenColInUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace ChatApplication.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ChatApplication.API.Entites.BlockedUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("BlockedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("BlockedId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BlockerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BlockedId");
-
-                    b.HasIndex("BlockerId");
-
-                    b.ToTable("BlockedUsers");
-                });
 
             modelBuilder.Entity("ChatApplication.API.Entites.ChatRoom", b =>
                 {
@@ -421,25 +396,6 @@ namespace ChatApplication.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ChatApplication.API.Entites.BlockedUser", b =>
-                {
-                    b.HasOne("ChatApplication.API.Entites.User", "Blocked")
-                        .WithMany("BlockedUsers")
-                        .HasForeignKey("BlockedId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ChatApplication.API.Entites.User", "Blocker")
-                        .WithMany("BlockerUsers")
-                        .HasForeignKey("BlockerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Blocked");
-
-                    b.Navigation("Blocker");
-                });
-
             modelBuilder.Entity("ChatApplication.API.Entites.ChatRoomUser", b =>
                 {
                     b.HasOne("ChatApplication.API.Entites.ChatRoom", "ChatRoom")
@@ -604,10 +560,6 @@ namespace ChatApplication.API.Migrations
 
             modelBuilder.Entity("ChatApplication.API.Entites.User", b =>
                 {
-                    b.Navigation("BlockedUsers");
-
-                    b.Navigation("BlockerUsers");
-
                     b.Navigation("ChatRoomUsers");
 
                     b.Navigation("PinnedMessages");

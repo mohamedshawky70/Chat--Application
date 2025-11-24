@@ -4,7 +4,8 @@ namespace ChatApplication.API.Mapping;
 
 public static class RoomExtension
 {
-	public static ChatRoom MapToChatRoom(this CreatedRoomRequest request)
+	// Create
+	public static ChatRoom MapToChatRoom(this FormRoomRequest request)
 	{
 		return new ChatRoom
 		{
@@ -15,6 +16,21 @@ public static class RoomExtension
 			CreatorUserId = request.CreatorUserId
 		};
 	}
+
+	// Update
+	public static ChatRoom MapToChatRoom(this FormRoomRequest request, ChatRoom room)
+	{
+		var updatedRoom=room;
+		
+		room.Name = request.Name;
+		room.Description = request.Description;
+		room.IsPrivate = request.IsPrivate;
+		room.CreatedAt = request.CreatedAt;
+		room.CreatorUserId = request.CreatorUserId;
+
+		return updatedRoom;
+	}
+
 	public static RoomResponse MapToRoomResponse(this ChatRoom room)
 	{
 		return new RoomResponse

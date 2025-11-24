@@ -405,6 +405,25 @@ public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> 
 		var response = await _fileService.DownloadFileAsync(id, cancellationToken);
 		return Result.Success(response);
 	}
+
+	public async Task<Result> UserTypingAsync(string userId1, string userId2, CancellationToken cancellationToken = default)
+	{
+		var user = await _context.Users
+			.Where(u => u.Id == userId2)
+			.Select(u => new { u.FirstName, u.LastName, u.Avatar })
+			.FirstOrDefaultAsync(cancellationToken);
+		if (user == null)
+			return Result.Failure(UserError.UserNotFoundInRoom);
+
+		await _hubContext.Clients.Client($"User_{userId1}").SendAsync("UserIsTyping", new
+		{
+			UserName = $"{user.FirstName} {user.LastName}",
+			UserId= userId2, 
+		}, cancellationToken: cancellationToken);
+
+		return Result.Success();
+	}
+
 	public async Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default)
 	{
 		var message = await _context.Messages
