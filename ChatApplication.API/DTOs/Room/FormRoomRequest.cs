@@ -1,7 +1,8 @@
 ﻿namespace ChatApplication.API.DTOs.Room;
 
-public record CreatedRoomRequest
+public record FormRoomRequest
 (
+	int Id,
 	string Name,
 	string Description,
 	bool IsPrivate,

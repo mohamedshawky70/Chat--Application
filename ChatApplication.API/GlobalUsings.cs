@@ -11,6 +11,10 @@ global using ChatApplication.API.Services.UserService;
 global using Microsoft.AspNetCore.Identity;
 global using ChatApplication.API.DTOs.User;
 global using ChatApplication.API.enums;
+global using Microsoft.AspNetCore.SignalR;
+global using ChatApplication.API.Common;
+
+
 
 
 

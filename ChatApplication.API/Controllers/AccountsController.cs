@@ -1,5 +1,7 @@
 ﻿using ChatApplication.API.DTOs.Account;
+using ChatApplication.API.DTOs.File;
 using ChatApplication.API.Services.AccountService;
+using ChatApplication.API.Services.FileService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatApplication.API.Controllers;
@@ -8,9 +10,18 @@ namespace ChatApplication.API.Controllers;
 [ApiController]
 
 [Authorize]
-public class AccountsController(IAccountService accountService) : ControllerBase
+public class AccountsController(IAccountService accountService,IFileService fileService) : ControllerBase
 {
 	private readonly IAccountService _accountService = accountService;
+	private readonly IFileService _fileService = fileService;
+
+	[HttpPost("upload-profile-avatar")]
+	public async Task<IActionResult> UploadProfileAvatar([FromForm] UploadProfileAvatarRequest request, CancellationToken cancellationToken)
+	{
+		var result = await _fileService.UploadProfileAvatarAsync(request, cancellationToken);
+		return result.IsSuccess ? Ok() : NotFound(result.Error);
+	}
+
 	[HttpGet("profile")]
 	public async Task<IActionResult> UserProfile(CancellationToken cancellationToken)
 	{

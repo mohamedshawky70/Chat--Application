@@ -1,8 +1,8 @@
 ﻿namespace ChatApplication.API.DTOs.Room;
 
-public class CreatedRoomRequestValidator : AbstractValidator<CreatedRoomRequest>
+public class FormRoomRequestValidator : AbstractValidator<FormRoomRequest>
 {
-	public CreatedRoomRequestValidator()
+	public FormRoomRequestValidator()
 	{
 		RuleFor(x => x.Name)
 			.NotEmpty().WithMessage("Room name is required.")

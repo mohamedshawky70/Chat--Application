@@ -125,6 +125,13 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 		return result.IsSuccess ? File(result.Value().fileContent, result.Value().ContentType, result.Value().fileName) : NotFound(result.Error);
 	}
 
+	[HttpGet("user-typing/{userId1}")]
+	public async Task<IActionResult> UserTyping([FromRoute] string userId1, string userId2, CancellationToken cancellationToken)
+	{
+		var result = await _messagesService.UserTypingAsync(userId1,userId2, cancellationToken);
+		return result.IsSuccess ? NoContent() : NotFound(result.Error);
+	}
+
 	[HttpPut("delete/{messageId}")] //Soft delete
 	public async Task<IActionResult> DeleteMessage([FromRoute] int messageId,[FromQuery] string userId, CancellationToken cancellationToken = default)
 	{

@@ -36,5 +36,7 @@ public interface IMessagesService
 
 	Task<Result<(byte[] fileContent, string ContentType, string fileName)>> DownloadFileAsync(Guid id, CancellationToken cancellationToken = default);
 
+	Task<Result> UserTypingAsync(string userId1, string userId2, CancellationToken cancellationToken = default);
+
 	Task<Result> DeleteMessageAsync(int messageId, string userId, CancellationToken cancellationToken = default);
 }
