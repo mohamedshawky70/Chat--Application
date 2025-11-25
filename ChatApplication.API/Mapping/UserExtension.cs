@@ -1,5 +1,4 @@
 ﻿using ChatApplication.API.DTOs.Account;
-using ChatApplication.API.DTOs.User;
 
 namespace ChatApplication.API.Mapping;
 
@@ -12,7 +11,8 @@ public static class UserExtension
 			user.FirstName,
 			user.LastName,
 			user.PhoneNumber,
-			user.Avatar
+			user.Avatar,
+			user.Bio
 		);
 	}
 
@@ -23,6 +23,7 @@ public static class UserExtension
 		user.FirstName = request.FirstName;
 		user.LastName = request.LastName;
 		user.PhoneNumber = request.PhoneNumber;
+		user.Bio = request.Bio;
 		return updatedUser;
 	}
 
@@ -33,10 +34,12 @@ public static class UserExtension
 			 user.LastName,
 			 user.PhoneNumber,
 			 user.IsOnline,
-			 user.Avatar
+			 user.IsDeleted,
+			 user.Avatar,
+			 user.Bio
 		);
 	}
-	
+
 	public static IEnumerable<UserResponse> MapToUserResponse(this IEnumerable<User> users)
 	{
 		return users.Select(u => u.MapToUserResponse());

@@ -35,6 +35,8 @@ public class AuthService : IAuthService
 		if (user is null)
 			return Result.Failure<AuthResponse>(UserError.InvalidCredential);
 
+		//if(user.IsDeleted) Comment to can activate his account
+		//	return Result.Failure<AuthResponse>(UserError.UserDeleted);
 		//check password
 		var result = await _signInManager.PasswordSignInAsync(user, password, false, true);
 		if (result.Succeeded)
@@ -72,7 +74,7 @@ public class AuthService : IAuthService
 	public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
 	{
 		var userId = _jwtProvider.ValidateTaken(token);
-		//لو الاكباير ديت انتهي هيرجع نل
+		//لو الاكسباير ديت انتهي هيرجع نل
 		if (userId is null)
 			return Result.Failure<AuthResponse>(UserError.InvalidRefreshToken);
 
@@ -80,6 +82,9 @@ public class AuthService : IAuthService
 		//المنطق انه مش هيرجع نل لكن لا نثق ابدا في اليوزر اللعين
 		if (user is null)
 			return Result.Failure<AuthResponse>(UserError.InvalidRefreshToken);
+
+		//if(user.IsDeleted)
+		//	return Result.Failure<AuthResponse>(UserError.UserDeleted);
 
 		if (user.LockoutEnd > DateTime.UtcNow)
 			return Result.Failure<AuthResponse>(UserError.UserLockOut);

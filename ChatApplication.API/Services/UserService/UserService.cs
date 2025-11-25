@@ -9,7 +9,18 @@ public class UserService(ApplicationDbContext context, UserManager<User> userMan
 	private readonly UserManager<User> _userManager = userManager;
 	private readonly IHubContext<ChatHub> _hubContext = hubContext;
 
-	public async Task<Result<IEnumerable<UserResponse>>> GetAllAsync(FilterRequest request, CancellationToken cancellationToken = default)
+	public async Task<Result<IEnumerable<UserResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
+	{
+		var users = _context.Users
+			.OrderByDescending(u => u.IsOnline)
+			.ThenBy(u => u.FirstName)
+			.ThenBy(u => u.LastName);
+
+		var response = users.MapToUserResponse();
+		return Result.Success(response);
+	}
+	
+	public async Task<Result<IEnumerable<UserResponse>>> SearchAsync(FilterRequest request, CancellationToken cancellationToken = default)
 	{
 		var users = _context.Users.AsNoTracking();
 
