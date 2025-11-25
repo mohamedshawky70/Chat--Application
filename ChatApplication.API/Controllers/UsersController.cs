@@ -50,6 +50,13 @@ public class UsersController(IUserServeic userService) : ControllerBase
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
+	[HttpGet("is-admin/{userId}/{roomId}")]
+	public async Task<IActionResult> IsAdmin([FromRoute] string userId, [FromRoute] int roomId, CancellationToken cancellationToken)
+	{
+		var result = await _userService.IsAdminInRoomAsync(userId, roomId, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+
 	[HttpGet("last-seen/{userId}")]
 	public async Task<IActionResult> GetLastSeen([FromRoute] string userId, CancellationToken cancellationToken)
 	{
@@ -62,5 +69,19 @@ public class UsersController(IUserServeic userService) : ControllerBase
 	{
 		var result = await _userService.BlockUserAsync(blockerId, blockedId, cancellationToken);
 		return result.IsSuccess ? Ok() : NotFound(result.Error);
+	}
+
+	[HttpGet("is-blocked/{userId1}/{userId2}")]
+	public async Task<IActionResult> IsBlocked([FromRoute] string userId1, [FromRoute] string userId2, CancellationToken cancellationToken)
+	{
+		var result = await _userService.IsBlockedAsync(userId1, userId2, cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
+	}
+	
+	[HttpDelete("un-blocke/{userId1}/{userId2}")]
+	public async Task<IActionResult> UnBlockUserAsync([FromRoute] string userId1, [FromRoute] string userId2, CancellationToken cancellationToken)
+	{
+		var result = await _userService.UnBlockUserAsync(userId1, userId2, cancellationToken);
+		return result.IsSuccess ? NoContent(): NotFound(result.Error);
 	}
 }

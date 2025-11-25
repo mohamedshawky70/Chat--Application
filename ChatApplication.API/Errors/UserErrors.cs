@@ -22,5 +22,6 @@ public static class UserError
 	public static readonly Error UserNotFoundInRoom = new Error("User.UserNotFoundInRoom", "User not found in room", StatusCodes.Status404NotFound);
 	public static readonly Error UserIsAlreadyAdmin = new Error("User.UserIsAlreadyAdmin", "User is already admin", StatusCodes.Status409Conflict);
 	public static readonly Error UserBlocked = new Error("User.UserBlocked", "User is already blocked", StatusCodes.Status409Conflict);
+	public static readonly Error UserUnBlocke = new Error("User.UserUnBlocke", "User is already unblocked", StatusCodes.Status409Conflict);
 	public static readonly Error SelfBlocked = new Error("User.SelfBlocked", "Can't block you self", StatusCodes.Status409Conflict);
 }

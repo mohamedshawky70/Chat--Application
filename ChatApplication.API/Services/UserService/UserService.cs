@@ -117,6 +117,14 @@ public class UserService(ApplicationDbContext context, UserManager<User> userMan
 		return Result.Success(response);
 	}
 
+	public async Task<Result<bool>> IsAdminInRoomAsync(string userId, int roomId, CancellationToken cancellationToken = default)
+	{
+		var isAdmin=await _context.ChatRoomUsers
+			.AnyAsync(cru => cru.UserId == userId && cru.ChatRoomId == roomId && cru.IsAdmin, cancellationToken);
+
+		return Result.Success(isAdmin);
+	}
+
 	public async Task<Result<DateTime>> GetLastSeenAsync(string userId, CancellationToken cancellationToken = default)
 	{
 		var user = await _userManager.FindByIdAsync(userId);
@@ -131,8 +139,8 @@ public class UserService(ApplicationDbContext context, UserManager<User> userMan
 		if(blockerId==blockedId)
 			return Result.Failure(UserError.SelfBlocked);
 
-		var blocker =await _context.Users.FindAsync(blockerId);
-		var blocked =await _context.Users.FindAsync(blockedId);
+		var blocker =await _context.Users.FindAsync(blockerId, cancellationToken);
+		var blocked =await _context.Users.FindAsync(blockedId, cancellationToken);
 		if (blocker == null || blocked == null)
 			return Result.Failure(UserError.UserNotFound);
 
@@ -151,4 +159,38 @@ public class UserService(ApplicationDbContext context, UserManager<User> userMan
 		await _context.SaveChangesAsync(cancellationToken);
 		return Result.Success();
 	}
+	
+	public async Task<Result> UnBlockUserAsync(string blockerId, string blockedId, CancellationToken cancellationToken = default)
+	{
+		if(blockerId==blockedId)
+			return Result.Failure(UserError.SelfBlocked);
+
+		var blocker =await _context.Users.FindAsync(blockerId, cancellationToken);
+		var blocked =await _context.Users.FindAsync(blockedId, cancellationToken);
+		if (blocker == null || blocked == null)
+			return Result.Failure(UserError.UserNotFound);
+
+		var existingBlock = await _context.BlockedUsers
+			.FirstOrDefaultAsync(bu => bu.BlockerId == blockerId && bu.BlockedId == blockedId, cancellationToken);
+		if (existingBlock == null)
+			return Result.Failure(UserError.UserBlocked);
+
+		_context.BlockedUsers.Remove(existingBlock);
+		await _context.SaveChangesAsync(cancellationToken);
+		return Result.Success();
+	}
+
+	public async Task<Result<bool>> IsBlockedAsync(string userId1, string userId2, CancellationToken cancellationToken = default)
+    {
+		if(userId1==userId2)
+			return Result.Failure<bool>(UserError.SelfBlocked);
+
+        var blocked = await _context.BlockedUsers
+            .AnyAsync(b =>
+                (b.BlockerId == userId1 && b.BlockedId == userId2) ||
+                (b.BlockerId == userId2 && b.BlockedId == userId1), cancellationToken);
+
+        return Result.Success(blocked);
+    }
+
 }
