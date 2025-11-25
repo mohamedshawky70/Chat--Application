@@ -88,6 +88,24 @@ public static class DependencyInjection
 		//Add SingnalR
 		services.AddSignalR();
 
+		//Add Cors
+		var AllowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
+		services.AddCors(options =>
+		{
+			options.AddDefaultPolicy(builder =>
+			{
+				builder.WithOrigins(AllowedOrigins!) // Adjust the origin as needed
+					   .AllowAnyHeader()
+					   .AllowAnyMethod()
+					   .AllowCredentials();
+			});
+		});
+
+		//Add Exception Handler
+		services.AddExceptionHandler<GlobalExceptionHandler>();
+		services.AddProblemDetails();
+
+
 
 		return services;
 

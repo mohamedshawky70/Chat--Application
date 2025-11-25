@@ -53,18 +53,19 @@ public class AccountsController(IAccountService accountService,IFileService file
 		return result.IsSuccess ? Ok() : BadRequest(result);
 	}
 
-	[HttpPut("activate/{userId}")]
-	public async Task<IActionResult> ActivateAccount([FromRoute]string userId,CancellationToken canellationToken)
+	[HttpPut("activate")]
+	public async Task<IActionResult> ActivateAccount(CancellationToken canellationToken)
 	{
-		//var userId = User.GetUserId();
+		var userId = User.GetUserId();
 		var result = await _accountService.ActivateAsync(userId, canellationToken);
 		return result.IsSuccess ? NoContent() : BadRequest(result);
 	}
 	
-	[HttpPut("deactivate/{userId}")]
-	public async Task<IActionResult> DeactivateAccount([FromRoute]string userId,CancellationToken canellationToken)
+	[HttpPut("deactivate")]
+	public async Task<IActionResult> DeactivateAccount(CancellationToken canellationToken)
 	{
-		//var userId = User.GetUserId();
+		throw new Exception("My EX");
+		var userId = User.GetUserId();
 		var result = await _accountService.DeactivateAsync(userId, canellationToken);
 		return result.IsSuccess ? NoContent() : BadRequest(result);
 	}

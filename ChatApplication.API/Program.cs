@@ -26,11 +26,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.UseAuthorization();
 
 //URl hub connection
 app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
+
+app.UseExceptionHandler();
 
 app.Run();
