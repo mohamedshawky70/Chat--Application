@@ -4,7 +4,9 @@ public record UserResponse
 (
 	 string FirstName,
      string LastName,
-     string PhoneNumber,
+     string? PhoneNumber,
 	 bool IsOnline,
-     string? Avatar
+     bool IsDeleted,
+     string? Avatar,
+     string? Bio
 );

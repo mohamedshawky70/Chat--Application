@@ -1,5 +1,6 @@
 ﻿using ChatApplication.API.DTOs.Account;
 using ChatApplication.API.Mapping;
+using Microsoft.AspNetCore.Http;
 
 namespace ChatApplication.API.Services.AccountService;
 
@@ -15,6 +16,16 @@ public class AccountService(UserManager<User> userManager) : IAccountService
 		//	.FirstOrDefaultAsync(u => u.Id == userId, canellationToken);
 
 		//The best because optimized, uses index, already includes AsNoTracking-like behavior
+		var user = await _userManager.FindByIdAsync(userId);
+		if (user == null)
+			return Result.Failure<UserProfileResponse>(UserError.UserNotFound);
+
+		var response = user.MapToUserProfileResponse();
+		return Result.Success(response);
+	}
+	
+	public async Task<Result<UserProfileResponse>> OtherUserProfileAsync(string userId, CancellationToken canellationToken = default)
+	{
 		var user = await _userManager.FindByIdAsync(userId);
 		if (user == null)
 			return Result.Failure<UserProfileResponse>(UserError.UserNotFound);
@@ -46,5 +57,48 @@ public class AccountService(UserManager<User> userManager) : IAccountService
 		if (result.Succeeded)
 			return Result.Success();
 		return Result.Failure(UserError.ChangePasswordFailed);
+	}
+
+	public async Task<Result> DeactivateAsync(string userId, CancellationToken canellationToken = default)
+	{
+		var user =await _userManager.FindByIdAsync(userId);
+		if(user == null)
+			return Result.Failure(UserError.UserNotFound);
+
+		if(user.IsDeleted!= false)
+			return Result.Failure(AccountErrors.AccountDeactivated);
+
+		user.IsDeleted = true;
+		await _userManager.UpdateAsync(user);
+		return Result.Success();
+	}
+	
+	public async Task<Result> ActivateAsync(string userId, CancellationToken canellationToken = default)
+	{
+		var user =await _userManager.FindByIdAsync(userId);
+		if(user == null)
+			return Result.Failure(UserError.UserNotFound);
+
+		if(user.IsDeleted!= true)
+			return Result.Failure(AccountErrors.AccountActivated);
+
+		user.IsDeleted = false;
+		await _userManager.UpdateAsync(user);
+		return Result.Success();
+	}
+	public async Task<Result> DeleteAsync(string userId, CancellationToken canellationToken = default)
+	{
+		var user =await _userManager.FindByIdAsync(userId);
+		if(user == null)
+			return Result.Failure(UserError.UserNotFound);
+
+		var result =await _userManager.DeleteAsync(user);
+
+		if (!result.Succeeded)
+		{
+			var error = result.Errors.First();
+			return Result.Failure(new Error (error.Code,error.Description,StatusCodes.Status400BadRequest));
+		}
+		return Result.Success();
 	}
 }

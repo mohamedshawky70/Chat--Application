@@ -22,10 +22,17 @@ public class UsersController(IUserServeic userService) : ControllerBase
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
-	[HttpGet("search")]
-	public async Task<IActionResult> GetAll([FromBody] FilterRequest request, CancellationToken cancellationToken)
+	[HttpGet("")]
+	public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
 	{
-		var result = await _userService.GetAllAsync(request, cancellationToken);
+		var result = await _userService.GetAllAsync(cancellationToken);
+		return result.IsSuccess ? Ok(result.Value()) : BadRequest(result.Error);
+	}
+	
+	[HttpGet("search")]
+	public async Task<IActionResult> SearchAsync([FromBody] FilterRequest request, CancellationToken cancellationToken)
+	{
+		var result = await _userService.SearchAsync(request, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : BadRequest(result.Error);
 	}
 

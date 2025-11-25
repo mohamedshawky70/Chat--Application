@@ -2,7 +2,9 @@
 
 public interface IUserServeic
 {
-	Task<Result<IEnumerable<UserResponse>>> GetAllAsync(FilterRequest request, CancellationToken cancellationToken = default);
+	Task<Result<IEnumerable<UserResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
+
+	Task<Result<IEnumerable<UserResponse>>> SearchAsync(FilterRequest request, CancellationToken cancellationToken = default);
 
 	Task<Result<UserResponse>> GetByIdAsync(string userId, CancellationToken cancellationToken = default);
 

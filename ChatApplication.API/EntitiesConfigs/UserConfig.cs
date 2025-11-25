@@ -17,5 +17,8 @@ public class UserConfig : IEntityTypeConfiguration<User>
 
 		builder.Property(u => u.LastName)
 			.HasMaxLength(200);
+		
+		builder.Property(u => u.Bio)
+			.HasMaxLength(100);
 	}
 }

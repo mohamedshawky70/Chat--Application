@@ -24,4 +24,5 @@ public static class UserError
 	public static readonly Error UserBlocked = new Error("User.UserBlocked", "User is already blocked", StatusCodes.Status409Conflict);
 	public static readonly Error UserUnBlocke = new Error("User.UserUnBlocke", "User is already unblocked", StatusCodes.Status409Conflict);
 	public static readonly Error SelfBlocked = new Error("User.SelfBlocked", "Can't block you self", StatusCodes.Status409Conflict);
+	public static readonly Error UserDeleted = new Error("User.UserDeleted", "User is deleted", StatusCodes.Status409Conflict);
 }

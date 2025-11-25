@@ -9,8 +9,10 @@ public class User: IdentityUser
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastSeen { get; set; } 
     public bool IsOnline { get; set; }
+    public bool IsDeleted { get; set; }
     public string? ConnectionId { get; set; }
     public string? Avatar { get; set; }
+    public string? Bio { get; set; }
     public List<RefreshToken> RefreshTokens { get; set; } = [];
     public ICollection<Message> SentMessages { get; set; } = [];
     public ICollection<Message> ReceivedMessages { get; set; } = [];

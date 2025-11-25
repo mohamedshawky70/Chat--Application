@@ -18,6 +18,23 @@ public class ApplicationDbContext : IdentityDbContext<User>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+		//Global query filter
+		builder.Entity<Message>().HasQueryFilter(u => !u.IsDeleted);
 		base.OnModelCreating(builder);
+	}
+
+	override public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+	{
+		var entries = ChangeTracker
+			.Entries()
+			.Where(e => e.Entity is User && 
+				(e.State == EntityState.Added || e.State == EntityState.Modified));
+		foreach (var entityEntry in entries)
+		{
+			if (entityEntry.State == EntityState.Added)
+				((User)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
+		}
+		return base.SaveChangesAsync(cancellationToken);
 	}
 }

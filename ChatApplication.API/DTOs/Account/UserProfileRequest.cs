@@ -4,5 +4,6 @@ public record UserProfileRequest
 (
 	string FirstName,
 	string LastName,
-	string? PhoneNumber
+	string? PhoneNumber,
+	string? Bio
 );
