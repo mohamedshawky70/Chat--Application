@@ -10,10 +10,11 @@ namespace ChatApplication.API.Controllers;
 [ApiController]
 
 //[Authorize]
-public class AccountsController(IAccountService accountService,IFileService fileService) : ControllerBase
+public class AccountsController(IAccountService accountService,IFileService fileService, ILogger<AccountsController> logger) : ControllerBase
 {
 	private readonly IAccountService _accountService = accountService;
 	private readonly IFileService _fileService = fileService;
+	private readonly ILogger<AccountsController> _logger=logger;
 
 	[HttpPost("upload-profile-avatar")]
 	public async Task<IActionResult> UploadProfileAvatar([FromForm] UploadProfileAvatarRequest request, CancellationToken cancellationToken)
@@ -64,7 +65,6 @@ public class AccountsController(IAccountService accountService,IFileService file
 	[HttpPut("deactivate")]
 	public async Task<IActionResult> DeactivateAccount(CancellationToken canellationToken)
 	{
-		throw new Exception("My EX");
 		var userId = User.GetUserId();
 		var result = await _accountService.DeactivateAsync(userId, canellationToken);
 		return result.IsSuccess ? NoContent() : BadRequest(result);

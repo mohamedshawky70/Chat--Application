@@ -1,10 +1,13 @@
-//Start:27/10/2025
-//End: /11/2025
-
 using ChatApplication.API;
 using ChatApplication.API.Hubs;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Add Serilog
+builder.Host.UseSerilog((context,configuration) =>
+	configuration.ReadFrom.Configuration(context.Configuration) //Read from appsettings.json
+);
 
 // Configure custom services
 builder.Services.ConfigureServices(builder.Configuration);
@@ -23,6 +26,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "v1"));
 
 }
+//Add Serilog 
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

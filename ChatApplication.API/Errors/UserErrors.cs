@@ -25,4 +25,5 @@ public static class UserError
 	public static readonly Error UserUnBlocke = new Error("User.UserUnBlocke", "User is already unblocked", StatusCodes.Status409Conflict);
 	public static readonly Error SelfBlocked = new Error("User.SelfBlocked", "Can't block you self", StatusCodes.Status409Conflict);
 	public static readonly Error UserDeleted = new Error("User.UserDeleted", "User is deleted", StatusCodes.Status409Conflict);
+	public static readonly Error Ex = new Error("Internal server error", "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1", StatusCodes.Status500InternalServerError);
 }

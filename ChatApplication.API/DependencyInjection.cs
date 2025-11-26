@@ -105,7 +105,7 @@ public static class DependencyInjection
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 
-
+		
 
 		return services;
 
