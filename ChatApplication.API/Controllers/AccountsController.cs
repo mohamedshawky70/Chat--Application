@@ -68,7 +68,7 @@ public class AccountsController(IAccountService accountService, IFileService fil
 		return result.IsSuccess ? NoContent() : BadRequest(result);
 	}
 
-	[HttpDelete("account")]
+	[HttpDelete("")]
 	public async Task<IActionResult> DeleteAccount(CancellationToken canellationToken)
 	{
 		var userId = User.GetUserId();
