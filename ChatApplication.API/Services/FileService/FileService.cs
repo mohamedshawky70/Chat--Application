@@ -10,19 +10,19 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 	private readonly string _filePath = $"{webHostEnvironment.WebRootPath}/Uploaded";
 	public async Task<Result> UploadProfileAvatarAsync(UploadProfileAvatarRequest request, CancellationToken cancellationToken = default)
 	{
-		var user = await _context.Users.FindAsync(request.UserId);
+		var user = await _context.Users.FindAsync(request.UserId, cancellationToken);
 		if (user == null)
 			return Result.Failure(UserError.UserNotFound);
 
 
 		string RootPath = _webHostEnvironment.WebRootPath; //...wwwroot
-		// Delete old avatar in state editing
+														   // Delete old avatar in state editing
 		if (user.Avatar != null)
 		{
 			// maybe delete by mistake on server so should checking if it exists on server to avoid null exception
-			var OldAvatar = Path.Combine($"{RootPath}/Avatars",user.Avatar);
-			if (File.Exists(OldAvatar)) 
-					File.Delete(OldAvatar);
+			var OldAvatar = Path.Combine($"{RootPath}/Avatars", user.Avatar);
+			if (File.Exists(OldAvatar))
+				File.Delete(OldAvatar);
 		}
 
 		var Extension = Path.GetExtension(request.Avatar?.FileName); //.jpg, .jpeg, .png
@@ -37,11 +37,11 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 		return Result.Success();
 	}
 
-	public async Task<Result<Guid>> UploadFileAsync(UploadFileRquest request,int messageId, CancellationToken cancellationToken = default)
+	public async Task<Result<Guid>> UploadFileAsync(UploadFileRquest request, int messageId, CancellationToken cancellationToken = default)
 	{
 		var randomFileName = Path.GetRandomFileName();//Fake name with fake extension because if anyone reach these files on server
 
-		var uploadFile =request.MapToUploadFile();
+		var uploadFile = request.MapToUploadFile();
 		uploadFile.StoredFileName = randomFileName;
 		uploadFile.MessageId = messageId;
 
@@ -57,7 +57,7 @@ public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbCo
 		return Result.Success(uploadFile.Id);
 	}
 
-	public async Task<(byte[] fileContent, string ContentType, string fileName)>DownloadFileAsync(Guid id, CancellationToken cancellationToken = default)
+	public async Task<(byte[] fileContent, string ContentType, string fileName)> DownloadFileAsync(Guid id, CancellationToken cancellationToken = default)
 	{
 		var file = await _context.UploadFiles.FindAsync(id, cancellationToken);
 		if (file is null)

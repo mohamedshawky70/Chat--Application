@@ -3,7 +3,6 @@ using ChatApplication.API.DTOs.Message;
 using ChatApplication.API.Hubs;
 using ChatApplication.API.Mapping;
 using ChatApplication.API.Services.FileService;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ChatApplication.API.Services.MessagesService;
 
@@ -418,7 +417,7 @@ public class MessagesService(ApplicationDbContext context, IHubContext<ChatHub> 
 		await _hubContext.Clients.Client($"User_{userId1}").SendAsync("UserIsTyping", new
 		{
 			UserName = $"{user.FirstName} {user.LastName}",
-			UserId= userId2, 
+			UserId = userId2,
 		}, cancellationToken: cancellationToken);
 
 		return Result.Success();

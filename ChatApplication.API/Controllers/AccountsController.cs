@@ -8,13 +8,11 @@ namespace ChatApplication.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
-//[Authorize]
-public class AccountsController(IAccountService accountService,IFileService fileService, ILogger<AccountsController> logger) : ControllerBase
+[Authorize]
+public class AccountsController(IAccountService accountService, IFileService fileService) : ControllerBase
 {
 	private readonly IAccountService _accountService = accountService;
 	private readonly IFileService _fileService = fileService;
-	private readonly ILogger<AccountsController> _logger=logger;
 
 	[HttpPost("upload-profile-avatar")]
 	public async Task<IActionResult> UploadProfileAvatar([FromForm] UploadProfileAvatarRequest request, CancellationToken cancellationToken)
@@ -30,9 +28,9 @@ public class AccountsController(IAccountService accountService,IFileService file
 		var result = await _accountService.UserProfileAsync(userId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result);
 	}
-	
+
 	[HttpGet("other-profile/{userId}")]
-	public async Task<IActionResult> OtherUserProfile([FromRoute] string userId,CancellationToken cancellationToken)
+	public async Task<IActionResult> OtherUserProfile([FromRoute] string userId, CancellationToken cancellationToken)
 	{
 		var result = await _accountService.OtherUserProfileAsync(userId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result);
@@ -61,7 +59,7 @@ public class AccountsController(IAccountService accountService,IFileService file
 		var result = await _accountService.ActivateAsync(userId, canellationToken);
 		return result.IsSuccess ? NoContent() : BadRequest(result);
 	}
-	
+
 	[HttpPut("deactivate")]
 	public async Task<IActionResult> DeactivateAccount(CancellationToken canellationToken)
 	{
@@ -74,7 +72,7 @@ public class AccountsController(IAccountService accountService,IFileService file
 	public async Task<IActionResult> DeleteAccount(CancellationToken canellationToken)
 	{
 		var userId = User.GetUserId();
-		var result = await _accountService.DeleteAsync(userId,canellationToken);
+		var result = await _accountService.DeleteAsync(userId, canellationToken);
 		return result.IsSuccess ? NoContent() : BadRequest(result);
 	}
 }

@@ -1,17 +1,14 @@
 ﻿using ChatApplication.API.Authentication;
-using ChatApplication.API.Data;
 using ChatApplication.API.Services.AccountService;
 using ChatApplication.API.Services.EmailService;
 using ChatApplication.API.Services.FileService;
 using ChatApplication.API.Services.MessagesService;
 using ChatApplication.API.Services.RoomService;
-using ChatApplication.API.Services.UserService;
 using ChatApplication.API.Settings;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
 
@@ -85,6 +82,7 @@ public static class DependencyInjection
 		services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 		services.AddHangfireServer();
 
+
 		//Add SingnalR
 		services.AddSignalR();
 
@@ -105,7 +103,7 @@ public static class DependencyInjection
 		services.AddExceptionHandler<GlobalExceptionHandler>();
 		services.AddProblemDetails();
 
-		
+
 
 		return services;
 
