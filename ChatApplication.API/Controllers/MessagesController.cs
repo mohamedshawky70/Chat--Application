@@ -6,6 +6,7 @@ namespace ChatApplication.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class MessagesController(IMessagesService messagesService) : ControllerBase
 {
 	private readonly IMessagesService _messagesService = messagesService;
@@ -13,17 +14,17 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 	//If you don't wan't real-time
 	[HttpPost("private")]
 	//With Attachment
-	public async Task<IActionResult> SendPrivateMessage([FromForm] SendMessageRequest request , CancellationToken cancellationToken = default)
+	public async Task<IActionResult> SendPrivateMessage([FromForm] SendMessageRequest request, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.SendPrivateMessageAsync(request.SenderId!,request.ReceiverId!,request.Content!,request.File, cancellationToken);
+		var result = await _messagesService.SendPrivateMessageAsync(request.SenderId!, request.ReceiverId!, request.Content!, request.File, cancellationToken);
 		return result.IsSuccess ? CreatedAtAction(nameof(GetPrivateMessages), new { userId1 = request.SenderId, userId2 = request.ReceiverId }, result.Value()) : NotFound(result.Error);
 	}
-	
+
 	[HttpPost("room")]
-	public async Task<IActionResult> SendRoomMessage([FromForm] SendMessageRequest request , CancellationToken cancellationToken = default)
+	public async Task<IActionResult> SendRoomMessage([FromForm] SendMessageRequest request, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.SendRoomMessageAsync(request.SenderId!,request.ChatRoomId!,request.Content!,request.File, cancellationToken);
-		return result.IsSuccess ? CreatedAtAction(nameof(GetRoomMessages), new { roomId = request.ChatRoomId}, result.Value()) : NotFound(result.Error);
+		var result = await _messagesService.SendRoomMessageAsync(request.SenderId!, request.ChatRoomId!, request.Content!, request.File, cancellationToken);
+		return result.IsSuccess ? CreatedAtAction(nameof(GetRoomMessages), new { roomId = request.ChatRoomId }, result.Value()) : NotFound(result.Error);
 	}
 
 	[HttpGet("private/{userId1}/{userId2}")]
@@ -90,31 +91,31 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 	}
 
 	[HttpPost("forward/{messageId}")]
-	public async Task<IActionResult> ForwardMessage([FromRoute] int messageId, [FromBody] ForwardMessageRequest request,  CancellationToken cancellationToken = default)
+	public async Task<IActionResult> ForwardMessage([FromRoute] int messageId, [FromBody] ForwardMessageRequest request, CancellationToken cancellationToken = default)
 	{
 		var result = await _messagesService.ForwardMessageAsync(messageId, request, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
 	[HttpPut("pin/{messageId}")]
-	public async Task<IActionResult> PinMessage([FromRoute] int messageId,[FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	public async Task<IActionResult> PinMessage([FromRoute] int messageId, [FromQuery] string userId, [FromQuery] int roomId, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.PinnedMessageAsync(messageId,userId,roomId, cancellationToken);
+		var result = await _messagesService.PinnedMessageAsync(messageId, userId, roomId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
 	[HttpGet("pinned")]
-	public async Task<IActionResult> GetPinnedMessages([FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	public async Task<IActionResult> GetPinnedMessages([FromQuery] string userId, [FromQuery] int roomId, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.GetpinnedMessagesAsync(userId,roomId, cancellationToken);
+		var result = await _messagesService.GetpinnedMessagesAsync(userId, roomId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
 
 	[HttpPut("unpin/{messageId}")]
-	public async Task<IActionResult> UnpinMessage([FromRoute] int messageId,[FromQuery]string userId, [FromQuery]int roomId, CancellationToken cancellationToken = default)
+	public async Task<IActionResult> UnpinMessage([FromRoute] int messageId, [FromQuery] string userId, [FromQuery] int roomId, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.UnpinnedMessageAsync(messageId,userId,roomId, cancellationToken);
+		var result = await _messagesService.UnpinnedMessageAsync(messageId, userId, roomId, cancellationToken);
 		return result.IsSuccess ? Ok(result.Value()) : NotFound(result.Error);
 	}
 
@@ -128,14 +129,14 @@ public class MessagesController(IMessagesService messagesService) : ControllerBa
 	[HttpGet("user-typing/{userId1}")]
 	public async Task<IActionResult> UserTyping([FromRoute] string userId1, string userId2, CancellationToken cancellationToken)
 	{
-		var result = await _messagesService.UserTypingAsync(userId1,userId2, cancellationToken);
+		var result = await _messagesService.UserTypingAsync(userId1, userId2, cancellationToken);
 		return result.IsSuccess ? NoContent() : NotFound(result.Error);
 	}
 
 	[HttpPut("delete/{messageId}")] //Soft delete
-	public async Task<IActionResult> DeleteMessage([FromRoute] int messageId,[FromQuery] string userId, CancellationToken cancellationToken = default)
+	public async Task<IActionResult> DeleteMessage([FromRoute] int messageId, [FromQuery] string userId, CancellationToken cancellationToken = default)
 	{
-		var result = await _messagesService.DeleteMessageAsync(messageId,userId, cancellationToken);
+		var result = await _messagesService.DeleteMessageAsync(messageId, userId, cancellationToken);
 		return result.IsSuccess ? NoContent() : NotFound(result.Error);
 	}
 }

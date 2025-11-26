@@ -7,6 +7,7 @@ namespace ChatApplication.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RoomsController(IRoomService roomService) : ControllerBase
 {
 	private readonly IRoomService _roomService = roomService;

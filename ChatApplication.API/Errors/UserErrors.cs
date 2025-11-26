@@ -1,7 +1,4 @@
-﻿using ChatApplication.API.Abstractions;
-using System;
-
-namespace ChatApplication.API.Errors;
+﻿namespace ChatApplication.API.Errors;
 
 public static class UserError
 {
@@ -14,7 +11,7 @@ public static class UserError
 	public static readonly Error DuplicateConfirmed = new Error("User.DuplicateConfirmed", "This email already confirmed", StatusCodes.Status400BadRequest);
 	public static readonly Error UserIsDisable = new Error("User.UserIsDisable", "User is disable", StatusCodes.Status401Unauthorized);
 	public static readonly Error UserLockOut = new Error("User.UserLockOut", "User is lockOut", StatusCodes.Status401Unauthorized);
-	public static readonly Error UserNotFound = new Error("User.NotFound", " User not found", StatusCodes.Status401Unauthorized);
+	public static readonly Error UserNotFound = new Error("User.NotFound", " User not found", StatusCodes.Status404NotFound);
 	public static readonly Error InvalidRole = new Error("User.InvalidRole", "Invalid role", StatusCodes.Status400BadRequest);
 	public static readonly Error UpdateFailed = new Error("User.UpdateFailed", "Update failed", StatusCodes.Status400BadRequest);
 	public static readonly Error ChangePasswordFailed = new Error("User.ChangePasswordFailed", "Change password failed", StatusCodes.Status400BadRequest);

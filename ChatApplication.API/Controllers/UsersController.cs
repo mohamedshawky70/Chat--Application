@@ -4,6 +4,7 @@ namespace ChatApplication.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UsersController(IUserServeic userService) : ControllerBase
 {
 	private readonly IUserServeic _userService = userService;
