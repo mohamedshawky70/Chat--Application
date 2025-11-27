@@ -61,16 +61,16 @@ A modern and features rich real-time chat application that enables seamless comm
 
 ## 🛠️ Technologies Used
 
-Backend          : ASP.NET Core 10
-Real-Time        : SignalR
-ORM              : Entity Framework Core 
-Database         : SQL Server 
-Auth             : JWT + Identity
-Validation       : FluentValidation
-Mapping          : Manull using extension method
-Architecture     : Monolithic
-File Storage     : wwwroot/uploads 
-GUIDs            : Version 7 (sequential & fast)
+- Backend          : ASP.NET Core 10
+- Real-Time        : SignalR
+- ORM              : Entity Framework Core 
+- Database         : SQL Server 
+- Auth             : JWT + Identity
+- Validation       : FluentValidation
+- Mapping          : Manull using extension method
+- Architecture     : Monolithic
+- File Storage     : wwwroot/uploads 
+- GUIDs            : Version 7 (sequential & fast)
 
 ## 📁 Project Structure
 
