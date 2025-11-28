@@ -53,10 +53,13 @@ A modern and features rich real-time chat application that enables seamless comm
 - ✅ **JWT Authentication**      : ASP.NET Identity
 - ✅ **Pagination**              : Infinite scroll ready
 - ✅ **Error Handling
-  with Result Pattern**          :Employed a result pattern for structured error handling, providing clear and actionable feedback to users.
+  with Result Pattern**           :Employed a result pattern for structured error handling, providing clear and actionable feedback to users.
+  ✅ **Exception Handling**       :Integrated centralized exception handling to manage errors gracefully, significantly enhancing the user experience.
 - ✅ **CORS (Cross-Origin
-   Resource Sharing)**           :a security feature implemented by web browsers to prevent web pages from making requests to a different domain than the one that served the web page. 
+   Resource Sharing)**            :a security feature implemented by web browsers to prevent web pages from making requests to a different domain than the one that served the web page. 
 - ✅ **Background Jobs**          : Used Hangfire for managing background tasks like sending confirmation emails and processing password resets seamlessly.
+- ✅ **Audit Logging**            :Implemented audit logging to track changes on resources, ensuring transparency and accountability in user actions.
+- ✅ **Fluent Validation**        :Ensured data integrity by effectively validating inputs, leading to user-friendly error messages.
 
 
 ## 🛠️ Technologies Used
